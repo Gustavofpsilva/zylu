@@ -286,6 +286,10 @@ export default function AppAgendamentosPage() {
             <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
             Financeiro
           </button>
+          <button className={navButton(false)} onClick={() => router.push("/app/relatorios")}>
+            <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
+            Relatórios
+          </button>
         </nav>
 
         <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-3">
@@ -400,6 +404,16 @@ export default function AppAgendamentosPage() {
                 }}
               >
                 Financeiro
+              </button>
+
+                            <button
+                className={navButton(false)}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  router.push("/app/relatorios");
+                }}
+              >
+                Relatórios
               </button>
             </nav>
 

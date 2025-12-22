@@ -467,6 +467,10 @@ export default function FinanceiroPage() {
             <span className="inline-block w-2 h-2 rounded-full bg-blue-600" />
             Financeiro
           </button>
+          <button className={navButton(false)} onClick={() => router.push("/app/relatorios")}>
+            <span className="inline-block w-2 h-2 rounded-full bg-blue-600" />
+            Relatórios
+          </button>
         </nav>
 
         <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-3">
@@ -580,6 +584,15 @@ export default function FinanceiroPage() {
                 }}
               >
                 Financeiro
+              </button>
+                            <button
+                className={navButton(true)}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  router.push("/app/relatorios");
+                }}
+              >
+                Relatórios
               </button>
             </nav>
 

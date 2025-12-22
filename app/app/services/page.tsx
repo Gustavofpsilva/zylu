@@ -218,6 +218,13 @@ export default function ServicesPage() {
             <span className="w-2 h-2 rounded-full bg-slate-400"></span>
             Financeiro
           </button>
+          <button
+            onClick={() => router.push("/app/relatorios")}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-slate-50"
+          >
+            <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+            Relatórios
+          </button>
         </nav>
 
         <div className="pt-4 border-t border-slate-200 flex items-center gap-3">
@@ -313,6 +320,15 @@ export default function ServicesPage() {
                 className="w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50"
               >
                 Financeiro
+              </button>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  router.push("/app/relatorios");
+                }}
+                className="w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50"
+              >
+                Relatórios
               </button>
             </nav>
           </aside>

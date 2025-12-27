@@ -360,7 +360,7 @@ export default function ClosingDetailsPage({
           <p className="text-xs text-slate-600 mt-2">{err ?? "Tente novamente."}</p>
           <button
             onClick={() => router.push("/app")}
-            className="mt-4 inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
+            className="mt-4 inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition"
           >
             Voltar para dashboard
           </button>
@@ -414,7 +414,7 @@ export default function ClosingDetailsPage({
             >
               {({ loading: pdfLoading }) => (
                 <button
-                  className="px-3 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                  className="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition disabled:opacity-50"
                   disabled={pdfLoading}
                 >
                   {pdfLoading ? "Gerando PDF..." : "Baixar PDF"}
@@ -480,7 +480,7 @@ export default function ClosingDetailsPage({
           </div>
         </div>
 
-        <div className="bg-blue-50 rounded-2xl border border-slate-200 p-5">
+        <div className="bg-slate-100 rounded-2xl border border-slate-200 p-5">
           <p className="text-sm font-semibold text-slate-900">O que este fechamento garante</p>
           <p className="text-xs text-slate-600 mt-2 leading-relaxed">
             Este relatório é um snapshot. Mesmo que você edite atendimentos antigos depois,

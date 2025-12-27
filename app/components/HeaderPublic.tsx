@@ -22,7 +22,7 @@ export default function HeaderPublic() {
 
           <Link
             href="/auth/signup"
-            className="px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
+            className="px-4 py-2 rounded-full bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition"
           >
             Criar conta
           </Link>

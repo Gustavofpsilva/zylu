@@ -458,7 +458,7 @@ export default function ServicesPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium disabled:opacity-60 hover:bg-indigo-700 transition"
+                  className="w-full bg-slate-900 text-white py-2.5 rounded-lg font-medium disabled:opacity-60 hover:bg-indigo-700 transition"
                 >
                   {saving ? "Salvando..." : "Salvar serviço"}
                 </button>

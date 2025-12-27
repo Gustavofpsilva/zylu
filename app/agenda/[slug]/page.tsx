@@ -319,7 +319,7 @@ export default function PublicAgendaPage({
       <header className="border-b border-slate-200 bg-[#F6F7FB]">
         <div className="max-w-5xl mx-auto px-4 md:px-8 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-semibold text-lg">
+            <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center text-white font-semibold text-lg">
               {initialLetter}
             </div>
             <div>
@@ -436,7 +436,7 @@ export default function PublicAgendaPage({
                             isBooked
                               ? "bg-red-50 border-red-200 text-red-700 cursor-not-allowed"
                               : isSelected
-                              ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+                              ? "bg-slate-900 border-slate-200600 text-white shadow-sm"
                               : "bg-white border-slate-200 text-slate-800 hover:bg-slate-50"
                           }`}
                         >
@@ -490,7 +490,7 @@ export default function PublicAgendaPage({
           <div className="space-y-4">
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">
+                <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-semibold">
                   {initialLetter}
                 </div>
                 <div className="min-w-0">
@@ -521,7 +521,7 @@ export default function PublicAgendaPage({
               <button
                 disabled={!canConfirm}
                 onClick={handleConfirm}
-                className="mt-4 w-full px-3 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition"
+                className="mt-4 w-full px-3 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800 transition"
               >
                 {submitting ? "Confirmando..." : "Confirmar horário"}
               </button>

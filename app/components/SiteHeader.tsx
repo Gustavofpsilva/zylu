@@ -31,8 +31,8 @@ export default function SiteHeader() {
             onClick={() => router.push("/auth/signup")}
             className="
               px-4 py-2 text-sm font-medium
-              rounded-full bg-blue-600 text-white
-              hover:bg-blue-700
+              rounded-full bg-slate-900 text-white
+              hover:bg-slate-800
             "
           >
             Criar conta

@@ -35,7 +35,7 @@ function monthLabel(d: Date) {
 function navButton(active: boolean) {
   return `w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition ${
     active
-      ? "bg-blue-50 text-blue-700 font-medium"
+      ? "bg-slate-100 text-slate-900 font-medium"
       : "text-slate-700 hover:bg-slate-50"
   }`;
 }
@@ -184,7 +184,7 @@ export default function RelatoriosPage() {
       {/* SIDEBAR DESKTOP */}
       <aside className="hidden lg:flex flex-col w-[280px] bg-white border-r border-slate-200 px-5 py-6 sticky top-0 h-screen">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-semibold">
+          <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-semibold">
             M
           </div>
           <div>
@@ -202,7 +202,7 @@ export default function RelatoriosPage() {
         </nav>
 
         <div className="pt-4 border-t border-slate-200 flex items-center gap-2">
-          <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm">
+          <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm">
             {initialLetter}
           </div>
           <div className="min-w-0">
@@ -247,7 +247,7 @@ export default function RelatoriosPage() {
           <aside className="absolute left-0 top-0 h-full w-[280px] bg-white border-r border-slate-200 px-5 py-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-semibold">
+                <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-semibold">
                   M
                 </div>
                 <span className="text-sm font-semibold">Marcaí</span>
@@ -297,7 +297,7 @@ export default function RelatoriosPage() {
 
             {/* ✅ Informações do usuário no mobile drawer */}
             <div className="pt-4 border-t border-slate-200 flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm">
+              <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm">
                 {initialLetter}
               </div>
               <div className="min-w-0">

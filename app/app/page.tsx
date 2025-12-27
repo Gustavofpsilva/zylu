@@ -85,7 +85,7 @@ function niceDayLabel(d: Date) {
 
 function navButton(active: boolean) {
   return `w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition ${
-    active ? "bg-blue-50 text-blue-700 font-medium" : "text-slate-700 hover:bg-slate-50"
+    active ? "bg-slate-100 text-slate-900 font-medium" : "text-slate-700 hover:bg-slate-50"
   }`;
 }
 
@@ -407,7 +407,7 @@ export default function AppDashboardPage() {
       {/* SIDEBAR DESKTOP */}
       <aside className="hidden lg:flex flex-col w-[280px] bg-white border-r border-slate-200 px-5 py-6 sticky top-0 h-screen">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-semibold text-lg">
+          <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center text-white font-semibold text-lg">
             M
           </div>
           <div>
@@ -418,7 +418,7 @@ export default function AppDashboardPage() {
 
         <nav className="space-y-1 flex-1">
           <button className={navButton(true)} onClick={() => router.push("/app")}>
-            <span className="inline-block w-2 h-2 rounded-full bg-blue-600" />
+            <span className="inline-block w-2 h-2 rounded-full bg-slate-900" />
             Dashboard
           </button>
           <button className={navButton(false)} onClick={() => router.push("/app/agendamentos")}>
@@ -441,7 +441,7 @@ export default function AppDashboardPage() {
 
         <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">
+            <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-semibold">
               {initialLetter}
             </div>
             <div className="flex flex-col">
@@ -495,7 +495,7 @@ export default function AppDashboardPage() {
           <aside className="absolute left-0 top-0 h-full w-[280px] bg-white border-r border-slate-200 px-5 py-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-semibold text-lg">
+                <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center text-white font-semibold text-lg">
                   M
                 </div>
                 <div>
@@ -533,7 +533,7 @@ export default function AppDashboardPage() {
 
             <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">
+                <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-semibold">
                   {initialLetter}
                 </div>
                 <div className="min-w-0">
@@ -574,7 +574,7 @@ export default function AppDashboardPage() {
                 </div>
                 <button
                   onClick={() => navigator.clipboard.writeText(publicUrl).then(() => alert("Link copiado!"))}
-                  className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
+                  className="px-3 py-2 bg-slate-900 text-white rounded-lg text-sm hover:bg-slate-800 transition"
                 >
                   Copiar
                 </button>
@@ -593,7 +593,7 @@ export default function AppDashboardPage() {
                 <button
                   onClick={() => setPeriod("week")}
                   className={`px-3 py-1.5 text-xs rounded-full ${
-                    period === "week" ? "bg-blue-600 text-white" : "text-slate-600"
+                    period === "week" ? "bg-slate-900 text-white" : "text-slate-600"
                   }`}
                 >
                   Semana
@@ -601,7 +601,7 @@ export default function AppDashboardPage() {
                 <button
                   onClick={() => setPeriod("month")}
                   className={`px-3 py-1.5 text-xs rounded-full ${
-                    period === "month" ? "bg-blue-600 text-white" : "text-slate-600"
+                    period === "month" ? "bg-slate-900 text-white" : "text-slate-600"
                   }`}
                 >
                   Mês
@@ -619,7 +619,7 @@ export default function AppDashboardPage() {
               </button>
               <button
                 onClick={() => router.push("/app/financeiro")}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition"
               >
                 Ir para Financeiro
               </button>
@@ -655,7 +655,7 @@ export default function AppDashboardPage() {
                   <button
                     onClick={() => setMetric("previsto")}
                     className={`px-3 py-1.5 text-xs rounded-full ${
-                      metric === "previsto" ? "bg-blue-600 text-white" : "text-slate-600"
+                      metric === "previsto" ? "bg-slate-900 text-white" : "text-slate-600"
                     }`}
                   >
                     Previsto
@@ -663,7 +663,7 @@ export default function AppDashboardPage() {
                   <button
                     onClick={() => setMetric("pago")}
                     className={`px-3 py-1.5 text-xs rounded-full ${
-                      metric === "pago" ? "bg-blue-600 text-white" : "text-slate-600"
+                      metric === "pago" ? "bg-slate-900 text-white" : "text-slate-600"
                     }`}
                   >
                     Pago
@@ -671,7 +671,7 @@ export default function AppDashboardPage() {
                   <button
                     onClick={() => setMetric("areceber")}
                     className={`px-3 py-1.5 text-xs rounded-full ${
-                      metric === "areceber" ? "bg-blue-600 text-white" : "text-slate-600"
+                      metric === "areceber" ? "bg-slate-900 text-white" : "text-slate-600"
                     }`}
                   >
                     A receber
@@ -699,7 +699,7 @@ export default function AppDashboardPage() {
                   <button
                     onClick={() => setRankMode("qtd")}
                     className={`px-3 py-1.5 text-xs rounded-full ${
-                      rankMode === "qtd" ? "bg-blue-600 text-white" : "text-slate-600"
+                      rankMode === "qtd" ? "bg-slate-900 text-white" : "text-slate-600"
                     }`}
                   >
                     Qtd
@@ -707,7 +707,7 @@ export default function AppDashboardPage() {
                   <button
                     onClick={() => setRankMode("receita")}
                     className={`px-3 py-1.5 text-xs rounded-full ${
-                      rankMode === "receita" ? "bg-blue-600 text-white" : "text-slate-600"
+                      rankMode === "receita" ? "bg-slate-900 text-white" : "text-slate-600"
                     }`}
                   >
                     Receita
@@ -740,7 +740,7 @@ export default function AppDashboardPage() {
                 )}
               </div>
 
-              <div className="mt-4 rounded-2xl bg-blue-50 border border-slate-200 p-4">
+              <div className="mt-4 rounded-2xl bg-slate-100 border border-slate-200 p-4">
                 <p className="text-sm font-semibold text-slate-900 flex items-center gap-1">💡 Dica financeira</p>
                 <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                   Registre custos (aluguel, insumos, taxas, anúncios) para ver o resultado real do mês.

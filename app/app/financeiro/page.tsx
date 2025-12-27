@@ -84,7 +84,7 @@ function centsFromBRLInput(input: string) {
 
 function navButton(active: boolean) {
   return `w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition ${
-    active ? "bg-blue-50 text-blue-700 font-medium" : "text-slate-700 hover:bg-slate-50"
+    active ? "bg-slate-100 text-slate-900 font-medium" : "text-slate-700 hover:bg-slate-50"
   }`;
 }
 
@@ -441,7 +441,7 @@ export default function FinanceiroPage() {
       {/* SIDEBAR DESKTOP */}
       <aside className="hidden lg:flex flex-col w-[280px] bg-white border-r border-slate-200 px-5 py-6 sticky top-0 h-screen">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-semibold text-lg">
+          <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center text-white font-semibold text-lg">
             M
           </div>
           <div>
@@ -464,18 +464,18 @@ export default function FinanceiroPage() {
             Serviços
           </button>
           <button className={navButton(true)} onClick={() => router.push("/app/financeiro")}>
-            <span className="inline-block w-2 h-2 rounded-full bg-blue-600" />
+            <span className="inline-block w-2 h-2 rounded-full bg-slate-900" />
             Financeiro
           </button>
           <button className={navButton(false)} onClick={() => router.push("/app/relatorios")}>
-            <span className="inline-block w-2 h-2 rounded-full bg-blue-600" />
+            <span className="inline-block w-2 h-2 rounded-full bg-slate-900" />
             Relatórios
           </button>
         </nav>
 
         <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">
+            <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-semibold">
               {initialLetter}
             </div>
             <div className="flex flex-col">
@@ -530,7 +530,7 @@ export default function FinanceiroPage() {
           <aside className="absolute left-0 top-0 h-full w-[280px] bg-white border-r border-slate-200 px-5 py-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-semibold text-lg">
+                <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center text-white font-semibold text-lg">
                   M
                 </div>
                 <div>
@@ -598,7 +598,7 @@ export default function FinanceiroPage() {
 
             <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">
+                <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-semibold">
                   {initialLetter}
                 </div>
                 <div className="min-w-0">
@@ -745,7 +745,7 @@ export default function FinanceiroPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full mt-2 bg-blue-600 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition disabled:opacity-60"
+                  className="w-full mt-2 bg-slate-900 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 transition disabled:opacity-60"
                 >
                   {saving ? "Salvando..." : "Salvar custo"}
                 </button>
@@ -912,7 +912,7 @@ export default function FinanceiroPage() {
                   </button>
                   <button
                     onClick={handleUpdateExpense}
-                    className="px-3 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
+                    className="px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition disabled:opacity-50"
                     disabled={saving || deleting}
                   >
                     {saving ? "Salvando..." : "Salvar"}

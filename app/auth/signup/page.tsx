@@ -15,8 +15,6 @@ function slugify(name: string) {
 }
 
 function normalizeWhatsapp(input: string) {
-  // Mantém só dígitos. Ex: "(11) 99999-9999" -> "11999999999"
-  // Você pode decidir depois se quer forçar DDI 55, etc.
   return (input || "").replace(/\D/g, "");
 }
 
@@ -49,7 +47,7 @@ export default function SignupPage() {
 
     const whatsappDigits = normalizeWhatsapp(whatsapp);
     if (whatsappDigits.length < 10) {
-      setErrorMsg("Digite um WhatsApp válido (com DDD).");
+      setErrorMsg("Digite um WhatsApp válido com DDD.");
       return;
     }
 
@@ -61,19 +59,18 @@ export default function SignupPage() {
     });
 
     if (error) {
-      setLoading(false);
       setErrorMsg(error.message);
+      setLoading(false);
       return;
     }
 
     const userId = data.user?.id;
     if (!userId) {
-      setErrorMsg("Erro desconhecido ao criar usuário.");
+      setErrorMsg("Erro ao criar usuário.");
       setLoading(false);
       return;
     }
 
-    // ✅ slug agora vem do company_name
     const userSlug = slugify(companyName);
 
     const { error: profileError } = await supabase.from("profiles").insert({
@@ -86,7 +83,7 @@ export default function SignupPage() {
     });
 
     if (profileError) {
-      setErrorMsg("Erro ao criar perfil: " + profileError.message);
+      setErrorMsg(profileError.message);
       setLoading(false);
       return;
     }
@@ -94,187 +91,145 @@ export default function SignupPage() {
     router.push("/app");
   }
 
-  const previewSlug = companyName ? `/agenda/${slugify(companyName)}` : "/agenda/sua-empresa";
+  const previewSlug = companyName
+    ? `/agenda/${slugify(companyName)}`
+    : "/agenda/sua-empresa";
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        {/* Top bar */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.push("/")}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
-            type="button"
-          >
-            <span aria-hidden>←</span>
-            Voltar
-          </button>
-
-          <div className="hidden sm:flex items-center gap-2">
-            <div className="w-10 h-10 rounded-2xl bg-[var(--color-primary)] text-white flex items-center justify-center font-semibold">
+    <main className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-slate-950">
+      {/* LEFT / BRAND */}
+      <div className="hidden lg:flex flex-col justify-between p-12 text-white">
+        <div>
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-11 h-11 rounded-2xl bg-white text-slate-950 flex items-center justify-center font-semibold text-lg">
               M
             </div>
-            <div>
-              <p className="text-sm font-semibold text-slate-900">Marcaí</p>
-              <p className="text-[11px] text-slate-500">Crie sua conta</p>
-            </div>
+            <span className="text-lg font-semibold">Marcaí</span>
           </div>
+
+          <h1 className="text-4xl font-semibold leading-tight max-w-md">
+            Sua agenda organizada.
+            <span className="block text-slate-400">
+              Seu financeiro no controle.
+            </span>
+          </h1>
+
+          <p className="text-slate-400 mt-4 max-w-md">
+            Profissionais usam o Marcaí para agendar clientes e acompanhar ganhos
+            sem planilhas nem mensagens.
+          </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          {/* Copy */}
-          <div className="hidden lg:block">
-            <p className="text-xs text-slate-500">Cadastro</p>
-            <h1 className="text-3xl font-semibold text-slate-900 mt-2">
-              Comece em poucos minutos ✨
-            </h1>
-            <p className="text-slate-600 mt-2 max-w-md">
-              Crie sua conta, cadastre seus serviços e comece a receber
-              agendamentos com o link público da sua agenda.
+        <p className="text-xs text-slate-500">
+          © {new Date().getFullYear()} Marcaí
+        </p>
+      </div>
+
+      {/* RIGHT / FORM */}
+      <div className="flex items-center justify-center px-4 py-12 bg-slate-50">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="w-full max-w-md bg-white rounded-3xl border border-slate-200 p-8 shadow-sm"
+        >
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold text-slate-900">
+              Criar conta gratuita
+            </h2>
+            <p className="text-sm text-slate-600 mt-1">
+              Leva menos de 1 minuto. Sem cartão.
             </p>
-
-            <div className="mt-6 grid grid-cols-1 gap-3 max-w-md">
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-sm font-semibold text-slate-900">
-                  Controle do financeiro
-                </p>
-                <p className="text-xs text-slate-600 mt-1">
-                  Use previsto, pago e a receber para enxergar o mês inteiro.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-sm font-semibold text-slate-900">
-                  Notificação no WhatsApp
-                </p>
-                <p className="text-xs text-slate-600 mt-1">
-                  Receba aviso automático quando um cliente marcar horário.
-                </p>
-              </div>
-            </div>
           </div>
 
-          {/* Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="w-full"
+          <div className="space-y-4">
+            <Input label="Nome" value={name} onChange={setName} />
+            <Input
+              label="Nome da empresa"
+              value={companyName}
+              onChange={setCompanyName}
+              hint={`Seu link será ${previewSlug}`}
+            />
+            <Input
+              label="WhatsApp"
+              value={whatsapp}
+              onChange={setWhatsapp}
+              placeholder="(11) 99999-9999"
+            />
+            <Input
+              label="E-mail"
+              type="email"
+              value={email}
+              onChange={setEmail}
+            />
+            <Input
+              label="Senha"
+              type="password"
+              value={password}
+              onChange={setPassword}
+            />
+            <Input
+              label="Confirmar senha"
+              type="password"
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+            />
+          </div>
+
+          {errorMsg && (
+            <p className="mt-4 text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
+              {errorMsg}
+            </p>
+          )}
+
+          <button
+            onClick={handleSignup}
+            disabled={loading}
+            className="mt-6 w-full bg-slate-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-slate-800 transition disabled:opacity-60"
           >
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm max-w-md mx-auto">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] text-white flex items-center justify-center font-semibold text-lg">
-                  M
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">Criar conta</p>
-                  <p className="text-xs text-slate-500">Leva menos de 1 minuto</p>
-                </div>
-              </div>
+            {loading ? "Criando conta..." : "Criar conta"}
+          </button>
 
-              <div className="mt-6 space-y-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-slate-700">Nome</label>
-                  <input
-                    type="text"
-                    placeholder="Seu nome completo"
-                    className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-slate-700">Nome da empresa</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Studio Beleza da Ana"
-                    className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                  />
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    Esse nome vira seu link: <span className="font-medium">{previewSlug}</span>
-                  </p>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-slate-700">WhatsApp da empresa</label>
-                  <input
-                    type="tel"
-                    placeholder="(11) 99999-9999"
-                    className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)}
-                  />
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    Vamos usar esse número para enviar alertas de novos agendamentos.
-                  </p>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-slate-700">E-mail</label>
-                  <input
-                    type="email"
-                    placeholder="seu@email.com"
-                    className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-slate-700">Senha</label>
-                  <input
-                    type="password"
-                    placeholder="********"
-                    className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-slate-700">Confirmar senha</label>
-                  <input
-                    type="password"
-                    placeholder="********"
-                    className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {errorMsg && (
-                <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2 mt-4">
-                  {errorMsg}
-                </p>
-              )}
-
-              <button
-                onClick={handleSignup}
-                disabled={loading}
-                className="w-full mt-6 bg-[var(--color-primary)] text-white py-2.5 rounded-full text-sm font-medium hover:opacity-95 transition disabled:opacity-60"
-              >
-                {loading ? "Criando..." : "Criar conta"}
-              </button>
-
-              <div className="mt-4 text-center">
-                <p className="text-xs text-slate-600">
-                  Já tem conta?{" "}
-                  <button
-                    onClick={() => router.push("/auth/login")}
-                    className="text-[var(--color-primary)] font-medium hover:underline"
-                    type="button"
-                  >
-                    Entrar
-                  </button>
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
+          <p className="mt-4 text-center text-xs text-slate-600">
+            Já tem conta?{" "}
+            <button
+              onClick={() => router.push("/auth/login")}
+              className="font-medium text-slate-900 hover:underline"
+            >
+              Entrar
+            </button>
+          </p>
+        </motion.div>
       </div>
     </main>
+  );
+}
+
+/* ===== Components ===== */
+
+function Input(props: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  placeholder?: string;
+  hint?: string;
+}) {
+  return (
+    <div className="space-y-1">
+      <label className="text-xs font-medium text-slate-700">
+        {props.label}
+      </label>
+      <input
+        type={props.type ?? "text"}
+        value={props.value}
+        placeholder={props.placeholder}
+        onChange={(e) => props.onChange(e.target.value)}
+        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-slate-900"
+      />
+      {props.hint && (
+        <p className="text-[11px] text-slate-500">{props.hint}</p>
+      )}
+    </div>
   );
 }

@@ -1,4 +1,3 @@
-// app/app/services/page.tsx
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
@@ -6,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
-// Tipos alinhados com a tabela do Supabase
+/* =======================
+   TYPES
+======================= */
 type Service = {
   id: string;
   name: string;
@@ -18,122 +19,121 @@ type Service = {
   created_at: string;
 };
 
-function formatBRLFromCents(cents: number) {
+/* =======================
+   HELPERS
+======================= */
+function brl(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
   });
 }
 
+function navItem(active: boolean) {
+  return `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition ${
+    active
+      ? "bg-slate-900 text-white"
+      : "text-slate-600 hover:bg-slate-100"
+  }`;
+}
+
+/* =======================
+   PAGE
+======================= */
 export default function ServicesPage() {
   const router = useRouter();
   const supabase = useMemo(() => getSupabaseBrowserClient(), []);
 
+  const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState<string | null>(null);
+  const [userName, setUserName] = useState("Usuário");
 
-  // Form state
+  // form
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState(60);
   const [price, setPrice] = useState("");
-
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const initialLetter = userName?.trim().charAt(0).toUpperCase() ?? "M";
-
+  /* =======================
+     LOAD
+  ======================= */
   useEffect(() => {
-    async function loadData() {
-      setLoading(true);
-      setErrorMsg(null);
-
-      // 🔹 1. Carregar usuário
-      const { data: authData, error: authError } = await supabase.auth.getUser();
-      if (authError || !authData?.user) {
+    async function load() {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) {
         router.push("/auth/login");
         return;
       }
 
-      const userId = authData.user.id;
-
-      // 🔹 2. Carregar perfil
-      const { data: profileData } = await supabase
+      const { data: profile } = await supabase
         .from("profiles")
         .select("name")
-        .eq("id", userId)
+        .eq("id", auth.user.id)
         .maybeSingle();
 
-      setUserName(profileData?.name ?? authData.user.email ?? "Usuário");
+      setUserName(profile?.name ?? auth.user.email ?? "Usuário");
 
-      // 🔹 3. Carregar serviços
-      const { data: servicesData, error: servicesError } = await supabase
+      const { data } = await supabase
         .from("services")
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id", auth.user.id)
         .order("created_at", { ascending: true });
 
-      if (servicesError) {
-        setErrorMsg(servicesError.message);
-        setServices([]);
-      } else {
-        setServices(servicesData || []);
-      }
-
+      setServices((data ?? []) as Service[]);
       setLoading(false);
     }
 
-    loadData();
+    load();
   }, [router, supabase]);
 
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.push("/");
+  }
+
+  /* =======================
+     ACTIONS
+  ======================= */
   async function handleCreateService(e: FormEvent) {
     e.preventDefault();
     setErrorMsg(null);
 
     if (!name.trim() || !price.trim()) {
-      setErrorMsg("Informe pelo menos o nome e o preço do serviço.");
+      setErrorMsg("Informe nome e preço.");
       return;
     }
 
-    // Tratar formatação de moeda: "80,00" ou "80.00" → número
-    const cleanPrice = price.replace(/\./g, "").replace(",", ".");
-    const numericPrice = parseFloat(cleanPrice);
-
+    const numericPrice = parseFloat(price.replace(".", "").replace(",", "."));
     if (isNaN(numericPrice) || numericPrice <= 0) {
-      setErrorMsg("Preço inválido. Use um valor como 80,00.");
+      setErrorMsg("Preço inválido.");
       return;
     }
 
     setSaving(true);
 
-    const { data: authData, error: authError } = await supabase.auth.getUser();
-    if (authError || !authData?.user) {
-      setSaving(false);
-      router.push("/auth/login");
-      return;
-    }
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return;
 
-    const priceCents = Math.round(numericPrice * 100);
-
-    const { data: newService, error: insertError } = await supabase
+    const { data, error } = await supabase
       .from("services")
       .insert({
-        user_id: authData.user.id,
+        user_id: auth.user.id,
         name: name.trim(),
         description: description.trim() || null,
         duration_minutes: duration,
-        price_cents: priceCents,
+        price_cents: Math.round(numericPrice * 100),
         active: true,
       })
       .select("*")
       .single();
 
-    if (insertError) {
-      setErrorMsg(insertError.message || "Erro ao salvar o serviço.");
-    } else if (newService) {
-      setServices((prev) => [...prev, newService as Service]);
+    if (error) {
+      setErrorMsg(error.message);
+    } else {
+      setServices((prev) => [...prev, data as Service]);
       setName("");
       setDescription("");
       setDuration(60);
@@ -144,95 +144,73 @@ export default function ServicesPage() {
   }
 
   async function toggleActive(service: Service) {
-    const { data: updated, error: updateError } = await supabase
+    const { data } = await supabase
       .from("services")
       .update({ active: !service.active })
       .eq("id", service.id)
       .select("*")
       .single();
 
-    if (!updateError && updated) {
+    if (data) {
       setServices((prev) =>
-        prev.map((s) => (s.id === service.id ? (updated as Service) : s))
+        prev.map((s) => (s.id === service.id ? (data as Service) : s))
       );
     }
   }
 
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    router.push("/");
-  }
-
-  if (loading && services.length === 0) {
+  if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-slate-50">
-        <p className="text-slate-600">Carregando seus serviços...</p>
+        <p className="text-sm text-slate-500">Carregando serviços…</p>
       </main>
     );
   }
 
+  const initialLetter = userName.charAt(0).toUpperCase();
+
+  /* =======================
+     UI
+  ======================= */
   return (
     <main className="min-h-screen bg-slate-50 flex">
       {/* SIDEBAR DESKTOP */}
-      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 px-5 py-6 sticky top-0 h-screen">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold">
+      <aside className="hidden lg:flex flex-col w-[260px] bg-white border-r border-slate-200 px-5 py-6 sticky top-0 h-screen">
+        <div className="flex items-center gap-3 mb-10">
+          <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-semibold">
             M
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-900">Marcaí</p>
-            <p className="text-xs text-slate-500">Painel do profissional</p>
+            <p className="text-[11px] text-slate-500">Painel</p>
           </div>
         </div>
 
         <nav className="space-y-1 flex-1">
-          <button
-            onClick={() => router.push("/app")}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-slate-50"
-          >
-            <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+          <button onClick={() => router.push("/app")} className={navItem(false)}>
             Dashboard
           </button>
-
-          <button
-            onClick={() => router.push("/app/agendamentos")}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-slate-50"
-          >
-            <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+          <button onClick={() => router.push("/app/agendamentos")} className={navItem(false)}>
             Agendamentos
           </button>
-
-          <button
-            onClick={() => router.push("/app/services")}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm bg-indigo-50 text-indigo-700 font-medium"
-          >
-            <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+          <button className={navItem(true)}>
             Serviços
           </button>
-
-          {/* ✅ NOVO: Financeiro */}
-          <button
-            onClick={() => router.push("/app/financeiro")}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-slate-50"
-          >
-            <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+          <button onClick={() => router.push("/app/financeiro")} className={navItem(false)}>
             Financeiro
           </button>
-          <button
-            onClick={() => router.push("/app/relatorios")}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-slate-50"
-          >
-            <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+          <button onClick={() => router.push("/app/relatorios")} className={navItem(false)}>
             Relatórios
           </button>
         </nav>
 
         <div className="pt-4 border-t border-slate-200 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-semibold">
+          <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm">
             {initialLetter}
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-medium text-slate-900 truncate">{userName}</p>
+            <p className="text-xs font-medium text-slate-900 truncate">
+              {userName}
+            </p>
             <p className="text-[11px] text-slate-500">Conta profissional</p>
           </div>
           <button
@@ -245,21 +223,22 @@ export default function ServicesPage() {
       </aside>
 
       {/* MOBILE HEADER */}
-      <header className="lg:hidden fixed top-0 inset-x-0 z-30 bg-white border-b border-slate-200">
+      <header className="lg:hidden fixed top-0 inset-x-0 z-30 bg-slate-50 border-b border-slate-200">
         <div className="flex items-center justify-between px-4 py-4">
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="p-2 rounded-lg border border-slate-200"
+            className="w-10 h-10 rounded-xl border border-slate-200 bg-white"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            ☰
           </button>
           <div className="text-center">
-            <h1 className="text-base font-semibold text-slate-900">Serviços</h1>
-            <p className="text-xs text-slate-500">Catálogo do profissional</p>
+            <p className="text-sm font-semibold text-slate-900">Serviços</p>
+            <p className="text-[11px] text-slate-500">Catálogo</p>
           </div>
-          <button onClick={handleLogout} className="text-xs text-slate-600">
+          <button
+            onClick={handleLogout}
+            className="text-[11px] text-slate-600 hover:text-red-600"
+          >
             Sair
           </button>
         </div>
@@ -268,68 +247,17 @@ export default function ServicesPage() {
       {/* MOBILE DRAWER */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileMenuOpen(false)} />
-          <aside className="absolute left-0 top-0 h-full w-64 bg-white border-r border-slate-200 px-5 py-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold">
-                  M
-                </div>
-                <span className="text-sm font-semibold">Marcaí</span>
-              </div>
-              <button onClick={() => setMobileMenuOpen(false)} className="text-2xl">×</button>
-            </div>
-
-            <nav className="space-y-1">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  router.push("/app");
-                }}
-                className="w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50"
-              >
-                Dashboard
-              </button>
-
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  router.push("/app/agendamentos");
-                }}
-                className="w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50"
-              >
-                Agendamentos
-              </button>
-
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  router.push("/app/services");
-                }}
-                className="w-full text-left px-3 py-2.5 rounded-xl bg-indigo-50 text-indigo-700 font-medium"
-              >
-                Serviços
-              </button>
-
-              {/* ✅ NOVO: Financeiro */}
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  router.push("/app/financeiro");
-                }}
-                className="w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50"
-              >
-                Financeiro
-              </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  router.push("/app/relatorios");
-                }}
-                className="w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50"
-              >
-                Relatórios
-              </button>
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <aside className="absolute left-0 top-0 h-full w-[260px] bg-white px-5 py-6">
+            <nav className="space-y-1 mt-8">
+              <button onClick={() => router.push("/app")} className={navItem(false)}>Dashboard</button>
+              <button onClick={() => router.push("/app/agendamentos")} className={navItem(false)}>Agendamentos</button>
+              <button className={navItem(true)}>Serviços</button>
+              <button onClick={() => router.push("/app/financeiro")} className={navItem(false)}>Financeiro</button>
+              <button onClick={() => router.push("/app/relatorios")} className={navItem(false)}>Relatórios</button>
             </nav>
           </aside>
         </div>
@@ -337,59 +265,69 @@ export default function ServicesPage() {
 
       {/* CONTENT */}
       <div className="flex-1 min-w-0">
-        <div className="lg:hidden h-16" />
+        <div className="lg:hidden h-[72px]" />
 
         <motion.section
-          className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6"
+          className="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
         >
-          <div>
-            <p className="text-xs font-medium text-slate-600">SERVIÇOS</p>
-            <h1 className="text-2xl font-bold text-slate-900">Serviços oferecidos</h1>
-            <p className="text-sm text-slate-600">Cadastre o que seus clientes podem agendar.</p>
-          </div>
+          <header>
+            <p className="text-xs uppercase tracking-widest text-slate-500">
+              Serviços
+            </p>
+            <h1 className="text-2xl font-semibold text-slate-900">
+              Serviços oferecidos
+            </h1>
+            <p className="text-sm text-slate-600">
+              Cadastre o que seus clientes podem agendar.
+            </p>
+          </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1.3fr,1fr] gap-6">
-            {/* Lista de Serviços */}
-            <div className="bg-white rounded-xl border border-slate-200 p-5">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-sm font-semibold text-slate-900">Seus serviços</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr,1fr] gap-6">
+            {/* LIST */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-5">
+              <div className="flex justify-between mb-4">
+                <p className="text-sm font-semibold">Seus serviços</p>
                 <span className="text-xs text-slate-500">
-                  {services.length} {services.length === 1 ? "serviço" : "serviços"}
+                  {services.length} cadastrados
                 </span>
               </div>
-              <p className="text-xs text-slate-600 mb-4">Ative/desative sem perder histórico.</p>
 
               {services.length === 0 ? (
-                <p className="text-slate-600 text-center py-4">
-                  Você ainda não cadastrou nenhum serviço.
+                <p className="text-sm text-slate-600">
+                  Nenhum serviço cadastrado ainda.
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {services.map((service) => (
+                  {services.map((s) => (
                     <motion.div
-                      key={service.id}
-                      className="flex justify-between items-start gap-3 p-3 border border-slate-200 rounded-xl hover:bg-slate-50"
+                      key={s.id}
+                      className="flex items-start justify-between gap-3 p-4 border border-slate-200 rounded-2xl hover:bg-slate-50"
                       whileHover={{ x: 4 }}
                     >
                       <div className="min-w-0">
-                        <p className="font-medium text-slate-900 truncate">{service.name}</p>
-                        {service.description && (
-                          <p className="text-sm text-slate-600 mt-1">{service.description}</p>
+                        <p className="font-medium text-slate-900 truncate">
+                          {s.name}
+                        </p>
+                        {s.description && (
+                          <p className="text-sm text-slate-600 mt-1">
+                            {s.description}
+                          </p>
                         )}
                         <p className="text-xs text-slate-500 mt-1">
-                          {service.duration_minutes} min • {formatBRLFromCents(service.price_cents)}
+                          {s.duration_minutes} min • {brl(s.price_cents)}
                         </p>
                       </div>
                       <button
-                        onClick={() => toggleActive(service)}
+                        onClick={() => toggleActive(s)}
                         className={`text-xs px-3 py-1 rounded-full ${
-                          service.active ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-800"
+                          s.active
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-slate-100 text-slate-700"
                         }`}
                       >
-                        {service.active ? "Ativo" : "Inativo"}
+                        {s.active ? "Ativo" : "Inativo"}
                       </button>
                     </motion.div>
                   ))}
@@ -397,68 +335,46 @@ export default function ServicesPage() {
               )}
             </div>
 
-            {/* Formulário */}
-            <div className="bg-white rounded-xl border border-slate-200 p-5">
-              <h2 className="text-sm font-semibold text-slate-900">Novo serviço</h2>
-              <p className="text-xs text-slate-600 mb-4">Crie um serviço para aparecer no agendamento.</p>
+            {/* FORM */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-5">
+              <p className="text-sm font-semibold mb-1">Novo serviço</p>
+              <p className="text-xs text-slate-600 mb-4">
+                Crie um serviço para aparecer no agendamento.
+              </p>
 
               <form onSubmit={handleCreateService} className="space-y-4">
-                <div>
-                  <label className="block text-xs text-slate-700 mb-1">Nome do serviço</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Corte, Terapia, Aula..."
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs text-slate-700 mb-1">Descrição (opcional)</label>
-                  <textarea
-                    rows={2}
-                    placeholder="Ex: atendimento online, sessão individual..."
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </div>
+                <Input label="Nome do serviço" value={name} onChange={setName} />
+                <Input
+                  label="Descrição"
+                  value={description}
+                  onChange={setDescription}
+                  optional
+                />
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs text-slate-700 mb-1">Duração (min)</label>
-                    <input
-                      type="number"
-                      min={10}
-                      step={5}
-                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                      value={duration}
-                      onChange={(e) => setDuration(Number(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-slate-700 mb-1">Preço (R$)</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: 80,00"
-                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                    />
-                  </div>
+                  <Input
+                    label="Duração (min)"
+                    type="number"
+                    value={String(duration)}
+                    onChange={(v) => setDuration(Number(v))}
+                  />
+                  <Input
+                    label="Preço (R$)"
+                    value={price}
+                    onChange={setPrice}
+                    placeholder="80,00"
+                  />
                 </div>
 
                 {errorMsg && (
-                  <div className="bg-red-50 text-red-800 text-sm px-3 py-2 rounded-lg">
+                  <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
                     {errorMsg}
-                  </div>
+                  </p>
                 )}
 
                 <button
-                  type="submit"
                   disabled={saving}
-                  className="w-full bg-slate-900 text-white py-2.5 rounded-lg font-medium disabled:opacity-60 hover:bg-indigo-700 transition"
+                  className="w-full bg-slate-900 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 disabled:opacity-60 transition"
                 >
                   {saving ? "Salvando..." : "Salvar serviço"}
                 </button>
@@ -468,5 +384,39 @@ export default function ServicesPage() {
         </motion.section>
       </div>
     </main>
+  );
+}
+
+/* =======================
+   COMPONENTS
+======================= */
+function Input({
+  label,
+  value,
+  onChange,
+  type = "text",
+  placeholder,
+  optional,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  placeholder?: string;
+  optional?: boolean;
+}) {
+  return (
+    <div>
+      <label className="text-xs font-medium text-slate-700">
+        {label} {optional && <span className="text-slate-400">(opcional)</span>}
+      </label>
+      <input
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-900"
+      />
+    </div>
   );
 }

@@ -34,7 +34,7 @@ function monthLabel(d: Date) {
 function navItem(active: boolean) {
   return `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition ${
     active
-      ? "bg-slate-900 text-white"
+      ? "bg-slate-100 text-slate-900 font-medium"
       : "text-slate-600 hover:bg-slate-100"
   }`;
 }
@@ -177,21 +177,11 @@ export default function RelatoriosPage() {
         </div>
 
         <nav className="space-y-1 flex-1">
-          <button onClick={() => router.push("/app")} className={navItem(false)}>
-            Dashboard
-          </button>
-          <button onClick={() => router.push("/app/agendamentos")} className={navItem(false)}>
-            Agendamentos
-          </button>
-          <button onClick={() => router.push("/app/services")} className={navItem(false)}>
-            Serviços
-          </button>
-          <button onClick={() => router.push("/app/financeiro")} className={navItem(false)}>
-            Financeiro
-          </button>
-          <button className={navItem(true)}>
-            Relatórios
-          </button>
+          <button onClick={() => router.push("/app")} className={navItem(false)}>Dashboard</button>
+          <button onClick={() => router.push("/app/agendamentos")} className={navItem(false)}>Agendamentos</button>
+          <button onClick={() => router.push("/app/services")} className={navItem(false)}>Serviços</button>
+          <button onClick={() => router.push("/app/financeiro")} className={navItem(false)}>Financeiro</button>
+          <button className={navItem(true)}>Relatórios</button>
         </nav>
 
         <div className="pt-4 border-t border-slate-200 flex items-center gap-3">
@@ -199,15 +189,10 @@ export default function RelatoriosPage() {
             {initialLetter}
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-medium text-slate-900 truncate">
-              {userName}
-            </p>
+            <p className="text-xs font-medium text-slate-900 truncate">{userName}</p>
             <p className="text-[11px] text-slate-500">Conta profissional</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="ml-auto text-[11px] text-slate-500 hover:text-red-600"
-          >
+          <button onClick={handleLogout} className="ml-auto text-[11px] text-slate-500 hover:text-red-600">
             Sair
           </button>
         </div>
@@ -216,20 +201,18 @@ export default function RelatoriosPage() {
       {/* MOBILE HEADER */}
       <header className="lg:hidden fixed top-0 inset-x-0 z-30 bg-slate-50 border-b border-slate-200">
         <div className="flex items-center justify-between px-4 py-4">
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="w-10 h-10 rounded-xl border border-slate-200 bg-white"
-          >
+          <button onClick={() => setMobileMenuOpen(true)} className="w-10 h-10 rounded-xl border border-slate-200 bg-white">
             ☰
           </button>
-          <div className="text-center">
-            <p className="text-sm font-semibold text-slate-900">Relatórios</p>
-            <p className="text-[11px] text-slate-500">Visão estratégica</p>
+
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center text-sm font-semibold">
+              M
+            </div>
+            <span className="text-sm font-semibold text-slate-900">Marcaí</span>
           </div>
-          <button
-            onClick={handleLogout}
-            className="text-[11px] text-slate-600 hover:text-red-600"
-          >
+
+          <button onClick={handleLogout} className="text-[11px] text-slate-600 hover:text-red-600">
             Sair
           </button>
         </div>
@@ -238,12 +221,19 @@ export default function RelatoriosPage() {
       {/* MOBILE DRAWER */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileMenuOpen(false)} />
           <aside className="absolute left-0 top-0 h-full w-[260px] bg-white px-5 py-6">
-            <nav className="space-y-1 mt-8">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-semibold">
+                M
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Marcaí</p>
+                <p className="text-[11px] text-slate-500">Painel</p>
+              </div>
+            </div>
+
+            <nav className="space-y-1">
               <button onClick={() => router.push("/app")} className={navItem(false)}>Dashboard</button>
               <button onClick={() => router.push("/app/agendamentos")} className={navItem(false)}>Agendamentos</button>
               <button onClick={() => router.push("/app/services")} className={navItem(false)}>Serviços</button>
@@ -263,11 +253,8 @@ export default function RelatoriosPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          {/* HEADER */}
           <header>
-            <p className="text-xs uppercase tracking-widest text-slate-500">
-              Relatório mensal
-            </p>
+            <p className="text-xs uppercase tracking-widest text-slate-500">Relatório mensal</p>
             <h1 className="text-3xl font-semibold text-slate-900 mt-1">
               {monthLabel(new Date())}
             </h1>
@@ -276,48 +263,29 @@ export default function RelatoriosPage() {
             </p>
           </header>
 
-          {/* HERO */}
           <div className="bg-slate-900 text-white rounded-3xl p-8">
             <p className="text-sm text-slate-300">Total recebido no mês</p>
-            <p className="text-4xl font-semibold mt-2">
-              {brl(computed.pago)}
-            </p>
+            <p className="text-4xl font-semibold mt-2">{brl(computed.pago)}</p>
 
             <div className="mt-6 grid grid-cols-2 gap-6">
               <div>
                 <p className="text-xs text-slate-400">Previsto</p>
-                <p className="text-lg font-medium">
-                  {brl(computed.previsto)}
-                </p>
+                <p className="text-lg font-medium">{brl(computed.previsto)}</p>
               </div>
               <div>
                 <p className="text-xs text-slate-400">A receber</p>
-                <p className="text-lg font-medium">
-                  {brl(computed.areceber)}
-                </p>
+                <p className="text-lg font-medium">{brl(computed.areceber)}</p>
               </div>
             </div>
           </div>
 
-          {/* STATS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Stat
-              title="Ticket médio"
-              value={brl(computed.ticketMedio)}
-              description="Valor médio por atendimento"
-            />
-            <Stat
-              title="Atendimentos"
-              value={String(rows.length)}
-              description="Realizados no período"
-            />
+            <Stat title="Ticket médio" value={brl(computed.ticketMedio)} description="Valor médio por atendimento" />
+            <Stat title="Atendimentos" value={String(rows.length)} description="Realizados no período" />
           </div>
 
-          {/* INSIGHTS */}
           <div className="bg-white rounded-3xl border border-slate-200 p-6">
-            <p className="text-sm font-semibold text-slate-900 mb-3">
-              Insights do mês
-            </p>
+            <p className="text-sm font-semibold text-slate-900 mb-3">Insights do mês</p>
             <ul className="space-y-2 text-sm text-slate-700">
               {insights.map((i, idx) => (
                 <li key={idx}>• {i}</li>

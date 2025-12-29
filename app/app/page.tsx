@@ -418,23 +418,18 @@ export default function AppDashboardPage() {
 
         <nav className="space-y-1 flex-1">
           <button className={navButton(true)} onClick={() => router.push("/app")}>
-            <span className="inline-block w-2 h-2 rounded-full bg-slate-900" />
             Dashboard
           </button>
           <button className={navButton(false)} onClick={() => router.push("/app/agendamentos")}>
-            <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
             Agendamentos
           </button>
           <button className={navButton(false)} onClick={() => router.push("/app/services")}>
-            <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
             Serviços
           </button>
           <button className={navButton(false)} onClick={() => router.push("/app/financeiro")}>
-            <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
             Financeiro
           </button>
           <button className={navButton(false)} onClick={() => router.push("/app/relatorios")}>
-            <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
             Relatórios
           </button>
         </nav>

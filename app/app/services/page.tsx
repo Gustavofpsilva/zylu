@@ -32,7 +32,7 @@ function brl(cents: number) {
 function navItem(active: boolean) {
   return `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition ${
     active
-      ? "bg-slate-900 text-white"
+      ? "bg-slate-100 text-slate-900 font-medium"
       : "text-slate-600 hover:bg-slate-100"
   }`;
 }
